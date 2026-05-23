@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crifter — Content in Every Language. At Scale.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#111111;
+  --surface:#1A1A1A;
+  --card:#222222;
+  --yellow:#F5E600;
+  --volt:#CCFF00;
+  --white:#FFFFFF;
+  --gray:#555555;
+  --gray2:#888888;
+  --border:rgba(245,230,0,0.2);
+  --border2:rgba(255,255,255,0.08);
+  /* aliases for existing var() references */
+  --pink:#F5E600;
+  --teal:#CCFF00;
+  --cyan:#F5E600;
+  --lime:#CCFF00;
+  --purple:#F5E600;
+  --orange:#F5E600;
+  --cream:#FFFFFF;
+  --muted:#444444;
+  --muted2:#777777;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:#FFFFFF;font-family:'Barlow',sans-serif;overflow-x:hidden;cursor:none;}
+
+#cursor{position:fixed;width:8px;height:8px;background:#F5E600;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(245,230,0,0.5);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:transform .1s,width .2s,height .2s;}
+
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.022;pointer-events:none;z-index:9997;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(17,17,17,.95);border-bottom:1px solid rgba(245,230,0,.15);transition:padding .3s;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;font-weight:700;letter-spacing:6px;color:#FFFFFF;text-decoration:none;}
+.nav-logo span{color:#F5E600;}
+
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:3px;color:var(--muted2);text-decoration:none;text-transform:uppercase;transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:#F5E600;transition:width .3s;}
+.nav-links a:hover{color:#FFFFFF;}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{background:#F5E600;color:#111111;padding:9px 22px;border:none;font-family:'Bebas Neue',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.nav-cta:hover{background:linear-gradient(135deg,#F5E600,#CCFF00);border-color:transparent;color:#fff;box-shadow:0 0 30px rgba(245,230,0,.4);}
+
+/* ── HERO ── */
+#hero{position:relative;height:100vh;min-height:700px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(204,255,0,.13) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 15% 80%,rgba(245,230,0,.09) 0%,transparent 50%),radial-gradient(ellipse 50% 40% at 85% 70%,rgba(245,230,0,.07) 0%,transparent 50%);}
+#hero-canvas{position:absolute;inset:0;z-index:0;}
+.hero-content{position:relative;z-index:2;padding:0 24px;}
+.hero-eyebrow{font-size:10px;letter-spacing:5px;color:#F5E600;text-transform:uppercase;margin-bottom:20px;opacity:0;animation:fadeUp .9s .4s cubic-bezier(.16,1,.3,1) forwards;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(100px,16vw,240px);font-weight:700;line-height:.88;letter-spacing:-3px;color:#FFFFFF;opacity:0;animation:fadeUp .9s .6s cubic-bezier(.16,1,.3,1) forwards;}
+.hero-title .accent{color:#F5E600;font-style:normal;text-shadow:0 0 60px rgba(245,230,0,.4);}
+.hero-tagline{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:300;font-size:clamp(16px,2.2vw,26px);color:rgba(255,255,255,.6);margin-top:20px;opacity:0;animation:fadeUp .9s .8s cubic-bezier(.16,1,.3,1) forwards;}
+.hero-langs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:32px;opacity:0;animation:fadeUp .9s 1s cubic-bezier(.16,1,.3,1) forwards;}
+.lang-pill{padding:6px 16px;border:1px solid rgba(255,255,255,.06);font-size:9px;letter-spacing:3px;color:#555555;text-transform:uppercase;transition:all .2s;}
+.lang-pill.active,.lang-pill:hover{border-color:#F5E600;color:#F5E600;}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted);font-size:9px;letter-spacing:3px;text-transform:uppercase;animation:scrollBounce 2.5s ease-in-out infinite;}
+.scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,#F5E600,transparent);}
+
+/* hero floating characters */
+.hero-char{position:absolute;z-index:1;pointer-events:none;opacity:0;animation:floatIn .8s forwards;}
+.hero-char.left{left:5%;top:50%;transform:translateY(-50%);animation-delay:1.2s;}
+.hero-char.right{right:5%;top:50%;transform:translateY(-50%);animation-delay:1.4s;}
+@keyframes floatIn{to{opacity:1;}}
+@keyframes floatY{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+@keyframes floatY2{0%,100%{transform:translateY(0);}50%{transform:translateY(14px);}}
+.float-anim{animation:floatY 4s ease-in-out infinite;}
+.float-anim2{animation:floatY2 5s ease-in-out infinite;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(10px);}}
+
+/* ── MARQUEE ── */
+.marquee-section{border-top:1px solid var(--border);border-bottom:1px solid rgba(245,230,0,.15);padding:16px 0;overflow:hidden;background:var(--surface);}
+.marquee-track{display:flex;animation:marquee 28s linear infinite;white-space:nowrap;}
+.m-item{font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:600;letter-spacing:5px;color:#555555;text-transform:uppercase;padding:0 36px;flex-shrink:0;}
+.m-dot{background:linear-gradient(90deg,#F5E600,#CCFF00,#F5E600,#CCFF00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-left:36px;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── SECTION COMMONS ── */
+.section-label{font-size:10px;letter-spacing:4px;color:#F5E600;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::before{content:'';display:block;width:24px;height:1px;background:#F5E600;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7.5vw,100px);font-weight:700;line-height:1;letter-spacing:-1px;color:#FFFFFF;}
+.section-title em{font-style:italic;background:linear-gradient(135deg,#F5E600,#CCFF00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ── ABOUT ── */
+#about{display:grid;grid-template-columns:1.1fr .9fr;gap:80px;align-items:center;padding:140px 7%;}
+.about-desc{font-family:'Barlow Condensed',sans-serif;font-size:clamp(18px,1.6vw,22px);line-height:1.75;color:rgba(255,255,255,.5);margin-top:32px;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:52px;border:1px solid rgba(255,255,255,.06);}
+.stat-box{padding:28px 24px;border-right:1px solid var(--border);border-bottom:1px solid rgba(245,230,0,.15);transition:background .3s;}
+.stat-box:hover{background:var(--surface);}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:56px;font-weight:700;color:#F5E600;line-height:1;}
+.stat-label{font-size:9px;letter-spacing:3px;color:#555555;text-transform:uppercase;margin-top:4px;}
+.about-visual{position:relative;display:flex;align-items:center;justify-content:center;}
+#about-canvas{width:100%;max-width:480px;aspect-ratio:1;display:block;border:1px solid rgba(255,255,255,.06);}
+.about-canvas-label{position:absolute;bottom:16px;right:16px;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+
+/* ── LANGUAGES (expanded) ── */
+#languages{background:var(--surface);padding:100px 7%;}
+.lang-header{margin-bottom:16px;}
+.lang-subtext{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:400;font-size:18px;color:rgba(255,255,255,.45);margin-top:12px;margin-bottom:48px;}
+.lang-grid-main{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid rgba(255,255,255,.06);margin-bottom:1px;}
+.lang-grid-extra{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid rgba(255,255,255,.06);border-top:none;}
+.lang-card{background:var(--card);padding:44px 28px;cursor:pointer;position:relative;overflow:hidden;transition:background .3s;}
+.lang-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,45,120,.07),rgba(168,85,247,.04) 50%,rgba(0,207,255,.03));opacity:0;transition:opacity .3s;}
+.lang-card:hover::before{opacity:1;}
+.lang-card:hover{background:#2A2A2A;}
+.lang-native{font-size:62px;line-height:1;color:#FFFFFF;opacity:.07;margin-bottom:22px;transition:opacity .4s;font-family:serif;}
+.lang-card:hover .lang-native{opacity:.5;}
+.lang-name{font-family:'Bebas Neue',sans-serif;font-size:30px;font-weight:700;color:#FFFFFF;letter-spacing:3px;text-transform:uppercase;}
+.lang-region{font-size:9px;letter-spacing:3px;color:#F5E600;text-transform:uppercase;margin-top:6px;}
+.lang-speakers{font-size:10px;color:var(--muted2);margin-top:14px;}
+.lang-bar{height:1px;background:var(--border);margin-top:18px;position:relative;overflow:hidden;}
+.lang-bar-fill{height:100%;background:#F5E600;width:0;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+.lang-card.in-view .lang-bar-fill{width:var(--pct);}
+.lang-card.extra .lang-native{font-size:44px;}
+.lang-card.extra{padding:32px 24px;}
+
+/* ── SERVICES ── */
+#services{padding:120px 7%;position:relative;overflow:hidden;}
+.services-bg-char{position:absolute;right:-40px;top:50%;transform:translateY(-50%);opacity:.07;pointer-events:none;z-index:0;}
+.services-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:72px;position:relative;z-index:1;}
+.services-tagline{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:300;font-size:20px;color:rgba(255,255,255,.45);line-height:1.7;}
+.services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--border);border:1px solid rgba(255,255,255,.06);position:relative;z-index:1;}
+.svc-card{background:var(--card);padding:52px 44px;position:relative;overflow:hidden;transition:background .3s;cursor:default;}
+.svc-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,45,120,.05),rgba(168,85,247,.03),rgba(0,207,255,.02));opacity:0;transition:opacity .4s;}
+.svc-card:hover::after{opacity:1;}
+.svc-card:hover{background:#222222;}
+.svc-num{font-family:'Bebas Neue',sans-serif;font-size:80px;font-weight:700;line-height:1;background:linear-gradient(135deg,#F5E600,#CCFF00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:.25;position:absolute;top:20px;right:32px;transition:opacity .3s;}
+.svc-card:hover .svc-num{opacity:.5;}
+.svc-icon{margin-bottom:28px;}
+.svc-name{font-family:'Bebas Neue',sans-serif;font-size:36px;font-weight:700;letter-spacing:1px;color:#FFFFFF;line-height:1.1;}
+.svc-desc{font-size:11px;line-height:1.9;color:rgba(255,255,255,.45);margin-top:16px;}
+.svc-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+.svc-tag{font-size:8px;letter-spacing:2px;padding:4px 12px;border:1px solid;text-transform:uppercase;}
+.svc-tag.pink{border-color:rgba(245,230,0,.4);color:#F5E600;}
+
+.svc-tag.purple{border-color:rgba(168,85,247,.4);color:#CCFF00;}
+.svc-tag.cyan{border-color:rgba(0,207,255,.4);color:#F5E600;}
+
+.svc-tag.teal{border-color:rgba(0,245,196,.4);color:#CCFF00;}
+.svc-tag.lime{border-color:rgba(204,255,0,.4);color:#CCFF00;}
+.svc-char{position:absolute;bottom:-10px;right:-10px;opacity:.12;transition:opacity .4s;}
+.svc-card:hover .svc-char{opacity:.3;}
+
+/* ── WORK REEL ── */
+#work{padding:80px 0 100px;}
+.work-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;gap:40px;padding:0 7%;}
+.work-note{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:300;font-size:15px;color:#666666;max-width:260px;text-align:right;line-height:1.6;}
+
+.reel-hint{display:flex;align-items:center;gap:10px;padding:0 7%;margin-bottom:28px;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+
+.reel-track-outer{position:relative;width:100%;overflow:hidden;}
+.reel-track{
+  display:flex;gap:14px;
+  padding:10px 7% 24px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  cursor:grab;
+  scrollbar-width:none;
+}
+.reel-track::-webkit-scrollbar{display:none;}
+.reel-track.grabbing{cursor:grabbing;}
+
+.reel-card{
+  flex:0 0 auto;
+  width:260px;
+  aspect-ratio:9/16;
+  position:relative;
+  scroll-snap-align:start;
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.06);
+  transition:transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s;
+}
+.reel-card:hover{
+  transform:scale(1.04) translateY(-6px);
+  box-shadow:0 20px 60px rgba(0,0,0,.7), 0 0 30px rgba(245,230,0,.15);
+  z-index:5;
+  border-color:rgba(245,230,0,.35);
+}
+.reel-frame{position:absolute;inset:0;width:100%;height:100%;}
+.reel-frame iframe{width:100%;height:100%;border:none;pointer-events:none;}
+.reel-card:hover .reel-frame iframe{pointer-events:auto;}
+
+.reel-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(17,17,17,.7) 0%, transparent 40%);
+  pointer-events:none;z-index:2;
+  transition:opacity .3s;
+}
+.reel-card:hover .reel-overlay{opacity:.4;}
+
+.reel-play{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(.75);
+  width:54px;height:54px;
+  border:1.5px solid rgba(255,255,255,.5);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  z-index:4;opacity:0;
+  background:rgba(245,230,0,.2);
+  backdrop-filter:blur(8px);
+  transition:opacity .25s, transform .25s;
+}
+.reel-play svg{margin-left:3px;}
+.reel-card:hover .reel-play{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* fade edges */
+.reel-fade-left,.reel-fade-right{
+  position:absolute;top:0;bottom:0;width:120px;
+  pointer-events:none;z-index:10;
+}
+.reel-fade-left{left:0;background:linear-gradient(to right,#111111,transparent);}
+.reel-fade-right{right:0;background:linear-gradient(to left,#111111,transparent);}
+
+/* old grid styles kept minimal for any fallback */
+.video-card,.video-wrapper,.vid-overlay,.vid-meta,.vid-brand,.vid-tag,.vid-play,.work-grid{display:none;}
+
+/* ── CLIENTS ── */
+#clients{background:var(--surface);padding:100px 7%;border-top:1px solid var(--border);}
+.clients-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:60px;border:1px solid rgba(255,255,255,.06);}
+.client-cell{background:var(--card);padding:52px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:background .2s;}
+.client-cell:hover{background:#2A2A2A;}
+.client-name{font-family:'Bebas Neue',sans-serif;font-size:26px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;transition:color .2s;}
+.client-cell:hover .client-name{color:#FFFFFF;}
+.client-sector{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;transition:color .2s;}
+.client-cell:hover .client-sector{color:#F5E600;}
+
+/* ── CTA ── */
+#cta{padding:160px 7%;text-align:center;position:relative;overflow:hidden;}
+#cta-canvas{position:absolute;inset:0;z-index:0;}
+.cta-inner{position:relative;z-index:2;}
+.cta-chars{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.cta-char-l{position:absolute;left:2%;top:50%;transform:translateY(-50%);}
+.cta-char-r{position:absolute;right:2%;top:50%;transform:translateY(-50%);}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(204,255,0,.1) 0%,rgba(255,45,120,.05) 40%,transparent 70%);pointer-events:none;}
+.cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,9vw,130px);font-weight:700;line-height:.9;letter-spacing:-2px;}
+.cta-title em{font-style:italic;background:linear-gradient(135deg,#F5E600,#CCFF00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cta-sub{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:300;font-size:clamp(16px,1.8vw,22px);color:rgba(255,255,255,.5);margin:28px 0 52px;}
+.cta-btn{display:inline-block;background:#F5E600;color:#111111;padding:18px 64px;font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:700;letter-spacing:5px;text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.cta-btn:hover{background:#CCFF00;transform:translateY(-2px);}
+.cta-btn span{position:relative;z-index:2;}
+
+footer{border-top:1px solid var(--border);padding:28px 7%;display:flex;justify-content:space-between;align-items:center;background:var(--bg);}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;font-weight:700;letter-spacing:5px;color:var(--muted);}
+.f-logo span{color:#F5E600;}
+
+.f-tag{font-family:'Barlow Condensed',sans-serif;font-style:normal;font-weight:300;font-size:13px;color:var(--muted);}
+.f-copy{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+
+.modal-overlay{position:fixed;inset:0;z-index:9999;background:rgba(17,17,17,.97);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal-box{position:relative;width:min(480px,92vw);}
+.modal-iframe{width:100%;aspect-ratio:9/16;max-height:80vh;border:1px solid rgba(255,255,255,.06);display:block;}
+.modal-close{position:absolute;top:-44px;right:0;background:none;border:1px solid rgba(255,255,255,.06);color:var(--muted2);padding:6px 14px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.modal-close:hover{border-color:var(--pink);color:#FFFFFF;}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+/* ── CTA FORM ── */
+#cta{padding:120px 7% 100px;}
+.cta-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.cta-top{text-align:center;margin-bottom:64px;}
+.cta-form-wrap{width:100%;max-width:680px;position:relative;z-index:2;}
+.cta-form-inner{
+  background:#1A1A1A;
+  border:1px solid rgba(245,230,0,.2);
+  overflow:hidden;
+  position:relative;
+}
+.cta-form-inner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#F5E600,#CCFF00,#F5E600);
+  background-size:200% 100%;
+  animation:shimmer 2.5s linear infinite;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.cta-form-inner iframe{
+  display:block;width:100%;min-height:700px;border:none;
+  filter:invert(1) hue-rotate(180deg) brightness(0.88) contrast(0.95);
+}
+.cta-form-alt{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:24px;font-size:11px;letter-spacing:2px;
+  color:#555555;text-transform:uppercase;
+}
+.cta-email{
+  color:#F5E600;text-decoration:none;font-family:'Bebas Neue',sans-serif;
+  font-size:16px;letter-spacing:3px;
+  transition:color .2s;
+}
+.cta-email:hover{color:#CCFF00;}
+
+::-webkit-scrollbar-thumb{background:rgba(245,230,0,.3);}
+::-webkit-scrollbar-thumb:hover{background:#F5E600;}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">CRIFT<span>E</span>R</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#clients">Clients</a></li>
+    <li><a href="#cta">Contact</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Work With Us</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+
+  <!-- Left character: Anime girl with headphones -->
+  <div class="hero-char left">
+    <svg width="180" height="320" viewBox="0 0 180 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="float-anim">
+      <!-- body -->
+      <ellipse cx="90" cy="240" rx="50" ry="65" fill="url(#hbg1)"/>
+      <!-- jacket lines -->
+      <path d="M60 200 L90 280 L120 200" stroke="#F5E600" stroke-width="2" stroke-opacity=".6"/>
+      <!-- neck -->
+      <rect x="80" y="155" width="20" height="25" rx="6" fill="#FFCBA4"/>
+      <!-- head -->
+      <ellipse cx="90" cy="130" rx="42" ry="45" fill="#FFCBA4"/>
+      <!-- hair top -->
+      <path d="M48 110 Q50 60 90 58 Q130 60 132 110 Q120 75 90 72 Q60 75 48 110Z" fill="#1A1A1A"/>
+      <!-- hair sides -->
+      <path d="M48 110 Q38 140 44 165 Q55 155 58 140 Z" fill="#1A1A1A"/>
+      <path d="M132 110 Q142 140 136 165 Q125 155 122 140 Z" fill="#1A1A1A"/>
+      <!-- eyes big anime -->
+      <ellipse cx="75" cy="128" rx="10" ry="12" fill="white"/>
+      <ellipse cx="105" cy="128" rx="10" ry="12" fill="white"/>
+      <ellipse cx="75" cy="129" rx="7" ry="9" fill="#F5E600"/>
+      <ellipse cx="105" cy="129" rx="7" ry="9" fill="#CCFF00"/>
+      <circle cx="74" cy="127" r="3" fill="#111"/>
+      <circle cx="104" cy="127" r="3" fill="#111"/>
+      <circle cx="77" cy="125" r="2" fill="white"/>
+      <circle cx="107" cy="125" r="2" fill="white"/>
+      <!-- blush -->
+      <ellipse cx="64" cy="140" rx="8" ry="5" fill="#F5E600" fill-opacity=".3"/>
+      <ellipse cx="116" cy="140" rx="8" ry="5" fill="#F5E600" fill-opacity=".3"/>
+      <!-- mouth -->
+      <path d="M83 148 Q90 154 97 148" stroke="#FF7A9A" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- headphones -->
+      <path d="M48 115 Q50 80 90 78 Q130 80 132 115" stroke="#CCFF00" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <rect x="40" y="112" width="16" height="24" rx="8" fill="#CCFF00"/>
+      <rect x="124" y="112" width="16" height="24" rx="8" fill="#CCFF00"/>
+      <!-- mic in hand -->
+      <rect x="55" y="260" width="12" height="30" rx="6" fill="#F5E600"/>
+      <ellipse cx="61" cy="258" rx="8" ry="10" fill="#F5E600"/>
+      <!-- arms -->
+      <path d="M60 210 Q40 235 55 265" stroke="#FFCBA4" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M120 210 Q140 235 130 260" stroke="#FFCBA4" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <!-- glow lines -->
+      <path d="M10 150 L35 148" stroke="#F5E600" stroke-width="1.5" stroke-opacity=".5"/>
+      <path d="M5 162 L30 162" stroke="#CCFF00" stroke-width="1" stroke-opacity=".4"/>
+      <path d="M15 174 L38 171" stroke="#F5E600" stroke-width="1" stroke-opacity=".3"/>
+      <defs>
+        <linearGradient id="hbg1" x1="40" y1="175" x2="140" y2="305" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F5E600"/>
+          <stop offset="100%" stop-color="#CCFF00"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Right character: Superhero caricature -->
+  <div class="hero-char right">
+    <svg width="180" height="320" viewBox="0 0 180 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="float-anim2">
+      <!-- cape -->
+      <path d="M55 200 Q30 260 40 310 L90 290 L140 310 Q150 260 125 200Z" fill="url(#cape1)" fill-opacity=".9"/>
+      <!-- body suit -->
+      <ellipse cx="90" cy="235" rx="46" ry="60" fill="url(#suit1)"/>
+      <!-- chest S emblem -->
+      <circle cx="90" cy="225" r="18" fill="rgba(0,207,255,.2)" stroke="#F5E600" stroke-width="1.5"/>
+      <text x="90" y="231" text-anchor="middle" font-size="18" font-weight="bold" fill="#F5E600" font-family="Teko,sans-serif">C</text>
+      <!-- neck -->
+      <rect x="80" y="155" width="20" height="25" rx="5" fill="#F5CBA7"/>
+      <!-- head big caricature -->
+      <ellipse cx="90" cy="122" rx="50" ry="52" fill="#F5CBA7"/>
+      <!-- hair spiky anime -->
+      <path d="M40 100 L55 55 L70 90 L80 45 L90 85 L100 42 L110 88 L125 52 L140 100" stroke="#1A1A1A" stroke-width="12" stroke-linejoin="round" fill="#1A1A1A"/>
+      <path d="M40 105 Q42 80 90 75 Q138 80 140 105 Q120 85 90 82 Q60 85 40 105Z" fill="#1A1A1A"/>
+      <!-- mask -->
+      <path d="M40 118 Q40 108 55 106 Q68 105 80 112 L80 126 Q68 128 55 126 Q42 124 40 118Z" fill="#F5E600"/>
+      <path d="M140 118 Q140 108 125 106 Q112 105 100 112 L100 126 Q112 128 125 126 Q138 124 140 118Z" fill="#F5E600"/>
+      <!-- eyes -->
+      <ellipse cx="68" cy="118" rx="8" ry="9" fill="white"/>
+      <ellipse cx="112" cy="118" rx="8" ry="9" fill="white"/>
+      <ellipse cx="68" cy="119" rx="5" ry="6" fill="#F5E600"/>
+      <ellipse cx="112" cy="119" rx="5" ry="6" fill="#F5E600"/>
+      <circle cx="68" cy="118" r="2.5" fill="#001"/>
+      <circle cx="112" cy="118" r="2.5" fill="#001"/>
+      <!-- big grin -->
+      <path d="M70 142 Q90 158 110 142" stroke="#333" stroke-width="2.5" fill="white"/>
+      <path d="M70 142 Q90 156 110 142 Q90 165 70 142Z" fill="white"/>
+      <!-- heroic fist raised -->
+      <path d="M125 215 Q155 185 158 160" stroke="#F5CBA7" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <ellipse cx="158" cy="153" rx="14" ry="12" fill="#F5CBA7"/>
+      <!-- lightning bolt -->
+      <path d="M155 120 L144 138 L152 138 L141 158 L164 134 L155 134 Z" fill="#CCFF00" filter="url(#glow)"/>
+      <!-- left arm normal -->
+      <path d="M55 215 Q25 235 28 260" stroke="#F5CBA7" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <!-- stars around -->
+      <text x="20" y="130" font-size="16" fill="#F5E600" opacity=".8">★</text>
+      <text x="150" y="80" font-size="12" fill="#CCFF00" opacity=".8">✦</text>
+      <text x="12" y="200" font-size="10" fill="#F5E600" opacity=".6">◆</text>
+      <defs>
+        <linearGradient id="cape1" x1="55" y1="200" x2="125" y2="310" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F5E600"/>
+          <stop offset="100%" stop-color="#CCFF00"/>
+        </linearGradient>
+        <linearGradient id="suit1" x1="44" y1="175" x2="136" y2="295" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#222222"/>
+          <stop offset="100%" stop-color="#1A1A1A"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">MULTILINGUAL CONTENT AGENCY · EVERY LANGUAGE. EVERY PLATFORM.</p>
+    <h1 class="hero-title">CRIFT<span class="accent">E</span>R</h1>
+    <p class="hero-tagline">We make content that hits different — in every tongue.</p>
+    <div class="hero-langs">
+      <div class="lang-pill active">Tamil</div>
+      <div class="lang-pill">Telugu</div>
+      <div class="lang-pill">Malayalam</div>
+      <div class="lang-pill">Kannada</div>
+      <div class="lang-pill">Hindi</div>
+      <div class="lang-pill">English</div>
+      <div class="lang-pill">+ More</div>
+    </div>
+  </div>
+  <div class="hero-scroll"><div class="scroll-line"></div>Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="m-item">Tamil<span class="m-dot">✦</span></span>
+    <span class="m-item">Telugu<span class="m-dot">✦</span></span>
+    <span class="m-item">Malayalam<span class="m-dot">✦</span></span>
+    <span class="m-item">Kannada<span class="m-dot">✦</span></span>
+    <span class="m-item">Hindi<span class="m-dot">✦</span></span>
+    <span class="m-item">English<span class="m-dot">✦</span></span>
+    <span class="m-item">AI Video<span class="m-dot">✦</span></span>
+    <span class="m-item">At Scale<span class="m-dot">✦</span></span>
+    <span class="m-item">AEO · GEO<span class="m-dot">✦</span></span>
+    <span class="m-item">Tamil<span class="m-dot">✦</span></span>
+    <span class="m-item">Telugu<span class="m-dot">✦</span></span>
+    <span class="m-item">Malayalam<span class="m-dot">✦</span></span>
+    <span class="m-item">Kannada<span class="m-dot">✦</span></span>
+    <span class="m-item">Hindi<span class="m-dot">✦</span></span>
+    <span class="m-item">English<span class="m-dot">✦</span></span>
+    <span class="m-item">AI Video<span class="m-dot">✦</span></span>
+    <span class="m-item">At Scale<span class="m-dot">✦</span></span>
+    <span class="m-item">AEO · GEO<span class="m-dot">✦</span></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left">
+    <div class="section-label reveal">Who We Are</div>
+    <h2 class="section-title reveal">Content that<br><em>actually fits.</em></h2>
+    <p class="about-desc reveal">Crifter is a full-service multilingual content agency. We don't just translate — we create. From Tamil to Telugu, Hindi to English, and beyond — every piece of content is built native to its language, culture, and platform. Whether you need AI-powered video at scale or a fully produced brand film, we've got the team, the tech, and the tongue for it.</p>
+    <div class="about-stats reveal">
+      <div class="stat-box"><div class="stat-num">10+</div><div class="stat-label">Languages</div></div>
+      <div class="stat-box"><div class="stat-num">50+</div><div class="stat-label">Campaigns</div></div>
+      <div class="stat-box"><div class="stat-num">500M+</div><div class="stat-label">Audience Reach</div></div>
+      <div class="stat-box"><div class="stat-num">10+</div><div class="stat-label">Brand Partners</div></div>
+    </div>
+  </div>
+  <div class="about-visual reveal">
+    <canvas id="about-canvas"></canvas>
+    <!-- anime character floating on canvas -->
+    <div style="position:absolute;bottom:-20px;right:-30px;opacity:.55;">
+      <svg width="130" height="180" viewBox="0 0 130 180" fill="none" class="float-anim">
+        <!-- robot/AI anime character -->
+        <rect x="30" y="90" width="70" height="75" rx="10" fill="url(#rbg)"/>
+        <rect x="20" y="100" width="12" height="35" rx="6" fill="url(#rbg)"/>
+        <rect x="98" y="100" width="12" height="35" rx="6" fill="url(#rbg)"/>
+        <rect x="42" y="165" width="18" height="15" rx="4" fill="#CCFF00"/>
+        <rect x="70" y="165" width="18" height="15" rx="4" fill="#CCFF00"/>
+        <!-- head box -->
+        <rect x="22" y="28" width="86" height="72" rx="14" fill="#222222" stroke="#F5E600" stroke-width="1.5"/>
+        <!-- antenna -->
+        <line x1="65" y1="28" x2="65" y2="10" stroke="#F5E600" stroke-width="2"/>
+        <circle cx="65" cy="8" r="5" fill="#F5E600"/>
+        <!-- eyes LED -->
+        <rect x="34" y="48" width="22" height="16" rx="4" fill="#F5E600" fill-opacity=".9"/>
+        <rect x="74" y="48" width="22" height="16" rx="4" fill="#CCFF00" fill-opacity=".9"/>
+        <!-- smile LED -->
+        <path d="M40 78 Q65 90 90 78" stroke="#F5E600" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- chest panel -->
+        <rect x="45" y="108" width="40" height="28" rx="5" fill="#1A1A1A" stroke="#CCFF00" stroke-width="1"/>
+        <circle cx="55" cy="122" r="4" fill="#F5E600"/>
+        <circle cx="65" cy="122" r="4" fill="#CCFF00"/>
+        <circle cx="75" cy="122" r="4" fill="#F5E600"/>
+        <defs>
+          <linearGradient id="rbg" x1="20" y1="90" x2="110" y2="180" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#CCFF00"/>
+            <stop offset="100%" stop-color="#F5E600"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <span class="about-canvas-label">CRIFTER · 3D</span>
+  </div>
+</section>
+
+<!-- LANGUAGES -->
+<section id="languages">
+  <div class="lang-header reveal" style="padding:0 0 0 0;">
+    <div class="section-label">Languages We Operate In</div>
+    <h2 class="section-title">We speak<br><em>them all.</em></h2>
+    <p class="lang-subtext">South India. North India. Global English. And everything in between.</p>
+  </div>
+  <!-- PRIMARY 4 -->
+  <div class="lang-grid-main">
+    <div class="lang-card reveal" data-tilt>
+      <div class="lang-native">த</div>
+      <div class="lang-name">Tamil</div>
+      <div class="lang-region">Tamil Nadu · Sri Lanka</div>
+      <div class="lang-speakers">80M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:82%"></div></div>
+    </div>
+    <div class="lang-card reveal" data-tilt>
+      <div class="lang-native">తె</div>
+      <div class="lang-name">Telugu</div>
+      <div class="lang-region">Andhra Pradesh · Telangana</div>
+      <div class="lang-speakers">95M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:95%"></div></div>
+    </div>
+    <div class="lang-card reveal" data-tilt>
+      <div class="lang-native">മ</div>
+      <div class="lang-name">Malayalam</div>
+      <div class="lang-region">Kerala · Lakshadweep</div>
+      <div class="lang-speakers">38M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:40%"></div></div>
+    </div>
+    <div class="lang-card reveal" data-tilt>
+      <div class="lang-native">ಕ</div>
+      <div class="lang-name">Kannada</div>
+      <div class="lang-region">Karnataka</div>
+      <div class="lang-speakers">60M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:62%"></div></div>
+    </div>
+  </div>
+  <!-- EXTRA LANGUAGES -->
+  <div class="lang-grid-extra">
+    <div class="lang-card extra reveal" data-tilt>
+      <div class="lang-native">हि</div>
+      <div class="lang-name">Hindi</div>
+      <div class="lang-region">Pan-India · North India</div>
+      <div class="lang-speakers">600M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:100%"></div></div>
+    </div>
+    <div class="lang-card extra reveal" data-tilt>
+      <div class="lang-native">En</div>
+      <div class="lang-name">English</div>
+      <div class="lang-region">Global · India Urban</div>
+      <div class="lang-speakers">1.5B+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:100%"></div></div>
+    </div>
+    <div class="lang-card extra reveal" data-tilt>
+      <div class="lang-native">বাং</div>
+      <div class="lang-name">Bengali</div>
+      <div class="lang-region">West Bengal · Bangladesh</div>
+      <div class="lang-speakers">230M+ speakers</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:70%"></div></div>
+    </div>
+    <div class="lang-card extra reveal" data-tilt style="position:relative;">
+      <div class="lang-native">+</div>
+      <div class="lang-name">More</div>
+      <div class="lang-region">Marathi · Gujarati · Odia…</div>
+      <div class="lang-speakers">Any language. On demand.</div>
+      <div class="lang-bar"><div class="lang-bar-fill" style="--pct:100%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <!-- Big bg character -->
+  <div class="services-bg-char">
+    <svg width="420" height="520" viewBox="0 0 420 520" fill="none">
+      <!-- giant caricature filmmaker -->
+      <ellipse cx="210" cy="400" rx="120" ry="100" fill="#CCFF00" fill-opacity=".08"/>
+      <rect x="130" y="280" width="160" height="200" rx="20" fill="#F5E600" fill-opacity=".06"/>
+      <!-- camera -->
+      <rect x="150" y="340" width="100" height="70" rx="10" fill="white" fill-opacity=".05" stroke="#CCFF00" stroke-width="1.5" stroke-opacity=".3"/>
+      <circle cx="200" cy="375" r="24" fill="none" stroke="#F5E600" stroke-width="1.5" stroke-opacity=".3"/>
+      <circle cx="200" cy="375" r="14" fill="none" stroke="#F5E600" stroke-width="1" stroke-opacity=".25"/>
+      <rect x="250" y="348" width="28" height="14" rx="4" fill="none" stroke="#CCFF00" stroke-width="1.2" stroke-opacity=".3"/>
+      <!-- tripod -->
+      <line x1="200" y1="410" x2="165" y2="480" stroke="#CCFF00" stroke-width="2" stroke-opacity=".2"/>
+      <line x1="200" y1="410" x2="200" y2="485" stroke="#CCFF00" stroke-width="2" stroke-opacity=".2"/>
+      <line x1="200" y1="410" x2="235" y2="480" stroke="#CCFF00" stroke-width="2" stroke-opacity=".2"/>
+      <!-- head -->
+      <ellipse cx="210" cy="190" rx="80" ry="85" fill="white" fill-opacity=".04" stroke="#F5E600" stroke-width="1" stroke-opacity=".15"/>
+      <!-- director cap -->
+      <path d="M130 175 Q140 130 210 125 Q280 130 290 175" fill="white" fill-opacity=".04" stroke="#F5E600" stroke-width="1.5" stroke-opacity=".2"/>
+      <!-- big eyes -->
+      <ellipse cx="185" cy="195" rx="18" ry="20" fill="none" stroke="#F5E600" stroke-width="1" stroke-opacity=".2"/>
+      <ellipse cx="235" cy="195" rx="18" ry="20" fill="none" stroke="#F5E600" stroke-width="1" stroke-opacity=".2"/>
+      <!-- stars scattered -->
+      <text x="50" y="100" font-size="20" fill="#F5E600" fill-opacity=".15">✦</text>
+      <text x="350" y="150" font-size="16" fill="#CCFF00" fill-opacity=".15">★</text>
+      <text x="80" y="300" font-size="14" fill="#F5E600" fill-opacity=".12">◆</text>
+      <text x="370" y="350" font-size="18" fill="#CCFF00" fill-opacity=".15">✦</text>
+    </svg>
+  </div>
+
+  <div class="services-header">
+    <div>
+      <div class="section-label reveal">What We Do</div>
+      <h2 class="section-title reveal">Our<br><em>Services.</em></h2>
+    </div>
+    <p class="services-tagline reveal">From a single reel to a full-blown campaign — we handle it end to end. In your language. On your platform. At your scale.</p>
+  </div>
+
+  <div class="services-grid">
+    <!-- SERVICE 1 -->
+    <div class="svc-card reveal">
+      <div class="svc-num">01</div>
+      <div class="svc-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="10" fill="rgba(255,45,120,.1)"/>
+          <!-- film reel -->
+          <circle cx="28" cy="28" r="16" stroke="#F5E600" stroke-width="2"/>
+          <circle cx="28" cy="28" r="6" fill="#F5E600" fill-opacity=".4"/>
+          <line x1="28" y1="12" x2="28" y2="44" stroke="#F5E600" stroke-width="1.5" stroke-opacity=".4"/>
+          <line x1="12" y1="28" x2="44" y2="28" stroke="#F5E600" stroke-width="1.5" stroke-opacity=".4"/>
+          <!-- clapboard corner -->
+          <path d="M8 8 L22 8 L22 14 L8 14Z" fill="#F5E600" fill-opacity=".6"/>
+          <path d="M8 8 L12 14" stroke="white" stroke-width="1.5"/>
+          <path d="M14 8 L18 14" stroke="white" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="svc-name">Full Stack Video Production</div>
+      <div class="svc-desc">Concept to cut. We handle scripting, casting, shoot, edit, sound design, and delivery — all in-house. Built for volume without sacrificing quality. Every video is native to its language and culture.</div>
+      <div class="svc-tags">
+        <span class="svc-tag pink">Scripting</span>
+        <span class="svc-tag pink">Shoot</span>
+        <span class="svc-tag pink">Edit</span>
+        <span class="svc-tag pink">Sound Design</span>
+        <span class="svc-tag pink">UGC</span>
+      </div>
+      <!-- small character -->
+      <div class="svc-char">
+        <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
+          <ellipse cx="45" cy="75" rx="32" ry="25" fill="#F5E600" fill-opacity=".2"/>
+          <ellipse cx="45" cy="38" rx="28" ry="30" fill="#FFCBA4"/>
+          <path d="M17 25 Q20 0 45 0 Q70 0 73 25 Q60 12 45 10 Q30 12 17 25Z" fill="#1A1A1A"/>
+          <ellipse cx="35" cy="38" rx="7" ry="8" fill="white"/>
+          <ellipse cx="55" cy="38" rx="7" ry="8" fill="white"/>
+          <ellipse cx="35" cy="39" rx="4" ry="5" fill="#F5E600"/>
+          <ellipse cx="55" cy="39" rx="4" ry="5" fill="#F5E600"/>
+          <circle cx="35" cy="38" r="2" fill="#000"/>
+          <circle cx="55" cy="38" r="2" fill="#000"/>
+          <path d="M38 52 Q45 58 52 52" stroke="#FF7A9A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- camera -->
+          <rect x="20" y="70" width="28" height="20" rx="4" fill="#F5E600" fill-opacity=".6"/>
+          <circle cx="34" cy="80" r="6" fill="none" stroke="white" stroke-width="1.5"/>
+          <rect x="48" y="73" width="8" height="5" rx="2" fill="#F5E600" fill-opacity=".6"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SERVICE 2 -->
+    <div class="svc-card reveal">
+      <div class="svc-num">02</div>
+      <div class="svc-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="10" fill="rgba(204,255,0,.1)"/>
+          <!-- AI brain circuit -->
+          <circle cx="28" cy="28" r="14" stroke="#CCFF00" stroke-width="2"/>
+          <circle cx="28" cy="28" r="6" fill="#CCFF00" fill-opacity=".5"/>
+          <path d="M28 14 L24 20 L28 18 L32 20Z" fill="#CCFF00"/>
+          <path d="M28 42 L24 36 L28 38 L32 36Z" fill="#CCFF00"/>
+          <path d="M14 28 L20 24 L18 28 L20 32Z" fill="#CCFF00"/>
+          <path d="M42 28 L36 24 L38 28 L36 32Z" fill="#CCFF00"/>
+          <!-- circuit dots -->
+          <circle cx="12" cy="16" r="3" fill="#CCFF00" fill-opacity=".6"/>
+          <circle cx="44" cy="16" r="3" fill="#CCFF00" fill-opacity=".6"/>
+          <circle cx="12" cy="40" r="3" fill="#CCFF00" fill-opacity=".6"/>
+          <circle cx="44" cy="40" r="3" fill="#CCFF00" fill-opacity=".6"/>
+          <line x1="12" y1="16" x2="20" y2="22" stroke="#CCFF00" stroke-width="1" stroke-opacity=".5"/>
+          <line x1="44" y1="16" x2="36" y2="22" stroke="#CCFF00" stroke-width="1" stroke-opacity=".5"/>
+        </svg>
+      </div>
+      <div class="svc-name">A.I Video Production</div>
+      <div class="svc-desc">Avatars. Voiceovers. Automated scripts. We build AI-native video pipelines that produce multilingual content at 10x speed. Deepfake-proof, platform-ready, brand-safe. Ideal for high-frequency campaigns.</div>
+      <div class="svc-tags">
+        <span class="svc-tag purple">AI Avatars</span>
+        <span class="svc-tag purple">Voiceover</span>
+        <span class="svc-tag purple">Auto-Script</span>
+        <span class="svc-tag purple">Lip Sync</span>
+        <span class="svc-tag purple">Scale</span>
+      </div>
+      <div class="svc-char">
+        <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
+          <!-- robot anime -->
+          <rect x="20" y="45" width="50" height="45" rx="8" fill="#CCFF00" fill-opacity=".3"/>
+          <rect x="12" y="58" width="10" height="22" rx="5" fill="#CCFF00" fill-opacity=".3"/>
+          <rect x="68" y="58" width="10" height="22" rx="5" fill="#CCFF00" fill-opacity=".3"/>
+          <rect x="18" y="8" width="54" height="46" rx="10" fill="#222222" stroke="#CCFF00" stroke-width="1.5"/>
+          <line x1="45" y1="8" x2="45" y2="0" stroke="#CCFF00" stroke-width="2"/>
+          <circle cx="45" cy="-2" r="4" fill="#F5E600"/>
+          <rect x="26" y="20" width="16" height="12" rx="3" fill="#CCFF00" fill-opacity=".8"/>
+          <rect x="48" y="20" width="16" height="12" rx="3" fill="#CCFF00" fill-opacity=".8"/>
+          <path d="M28 42 Q45 50 62 42" stroke="#F5E600" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="32" cy="70" r="5" fill="#F5E600" fill-opacity=".6"/>
+          <circle cx="45" cy="70" r="5" fill="#CCFF00" fill-opacity=".6"/>
+          <circle cx="58" cy="70" r="5" fill="#F5E600" fill-opacity=".6"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SERVICE 3 -->
+    <div class="svc-card reveal">
+      <div class="svc-num">03</div>
+      <div class="svc-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="10" fill="rgba(0,207,255,.1)"/>
+          <!-- search/globe -->
+          <circle cx="28" cy="28" r="15" stroke="#F5E600" stroke-width="2"/>
+          <path d="M13 28 Q20 18 28 28 Q36 38 43 28" stroke="#F5E600" stroke-width="1.5" fill="none"/>
+          <path d="M28 13 Q22 20 22 28 Q22 36 28 43" stroke="#F5E600" stroke-width="1.2" fill="none" stroke-opacity=".6"/>
+          <path d="M28 13 Q34 20 34 28 Q34 36 28 43" stroke="#F5E600" stroke-width="1.2" fill="none" stroke-opacity=".6"/>
+          <!-- AI sparkle -->
+          <path d="M42 8 L44 14 L50 16 L44 18 L42 24 L40 18 L34 16 L40 14Z" fill="#F5E600"/>
+        </svg>
+      </div>
+      <div class="svc-name">AEO / GEO Listing</div>
+      <div class="svc-desc">Answer Engine Optimisation. Generative Engine Optimisation. We make your brand citable, discoverable, and transactable inside AI engines — ChatGPT, Perplexity, Gemini, Claude. The new SEO for the AI-first world.</div>
+      <div class="svc-tags">
+        <span class="svc-tag cyan">AEO</span>
+        <span class="svc-tag cyan">GEO</span>
+        <span class="svc-tag cyan">AI Search</span>
+        <span class="svc-tag cyan">Brand Citation</span>
+        <span class="svc-tag cyan">LLM Visibility</span>
+      </div>
+      <div class="svc-char">
+        <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
+          <!-- wizard/oracle anime -->
+          <ellipse cx="45" cy="78" rx="28" ry="22" fill="#F5E600" fill-opacity=".15"/>
+          <ellipse cx="45" cy="42" rx="24" ry="26" fill="#FFCBA4"/>
+          <!-- wizard hat -->
+          <path d="M21 30 L45 0 L69 30Z" fill="#F5E600" fill-opacity=".7"/>
+          <path d="M18 30 L72 30 L69 36 L21 36Z" fill="#F5E600" fill-opacity=".5"/>
+          <!-- stars on hat -->
+          <text x="38" y="22" font-size="8" fill="#CCFF00">★</text>
+          <!-- eyes -->
+          <ellipse cx="37" cy="43" rx="6" ry="7" fill="white"/>
+          <ellipse cx="53" cy="43" rx="6" ry="7" fill="white"/>
+          <ellipse cx="37" cy="44" rx="4" ry="5" fill="#F5E600"/>
+          <ellipse cx="53" cy="44" rx="4" ry="5" fill="#F5E600"/>
+          <circle cx="37" cy="43" r="2" fill="#001"/>
+          <circle cx="53" cy="43" r="2" fill="#001"/>
+          <path d="M39 56 Q45 61 51 56" stroke="#FF7A9A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- staff with globe -->
+          <line x1="72" y1="100" x2="72" y2="55" stroke="#F5E600" stroke-width="2.5"/>
+          <circle cx="72" cy="50" r="8" fill="none" stroke="#F5E600" stroke-width="2"/>
+          <path d="M64 50 Q68 44 72 50 Q76 56 72 50" stroke="#CCFF00" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SERVICE 4 -->
+    <div class="svc-card reveal">
+      <div class="svc-num">04</div>
+      <div class="svc-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <rect width="56" height="56" rx="10" fill="rgba(0,245,196,.1)"/>
+          <!-- growth chart + spark -->
+          <polyline points="8,44 18,32 28,36 38,20 48,12" stroke="#CCFF00" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="48" cy="12" r="4" fill="#CCFF00"/>
+          <path d="M44 4 L46 10 L52 12 L46 14 L44 20 L42 14 L36 12 L42 10Z" fill="#CCFF00"/>
+          <line x1="8" y1="12" x2="8" y2="48" stroke="#CCFF00" stroke-width="1.5" stroke-opacity=".4"/>
+          <line x1="8" y1="48" x2="52" y2="48" stroke="#CCFF00" stroke-width="1.5" stroke-opacity=".4"/>
+        </svg>
+      </div>
+      <div class="svc-name">Brand Growth &amp; Strategy</div>
+      <div class="svc-desc">Performance creative, social strategy, influencer content, and regional brand building. We craft campaigns that convert — not just impress. Data-backed creative for D2C, apps, and service brands across India.</div>
+      <div class="svc-tags">
+        <span class="svc-tag teal">Performance</span>
+        <span class="svc-tag teal">Social</span>
+        <span class="svc-tag teal">Influencer</span>
+        <span class="svc-tag lime">D2C</span>
+        <span class="svc-tag lime">Apps</span>
+      </div>
+      <div class="svc-char">
+        <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
+          <!-- anime business girl -->
+          <ellipse cx="45" cy="78" rx="28" ry="22" fill="#CCFF00" fill-opacity=".15"/>
+          <ellipse cx="45" cy="42" rx="22" ry="24" fill="#FFCBA4"/>
+          <path d="M23 28 Q26 5 45 4 Q64 5 67 28 Q56 16 45 14 Q34 16 23 28Z" fill="#1A1A1A"/>
+          <!-- glasses -->
+          <rect x="28" y="39" width="14" height="10" rx="4" fill="none" stroke="#CCFF00" stroke-width="1.5"/>
+          <rect x="48" y="39" width="14" height="10" rx="4" fill="none" stroke="#CCFF00" stroke-width="1.5"/>
+          <line x1="42" y1="44" x2="48" y2="44" stroke="#CCFF00" stroke-width="1.2"/>
+          <ellipse cx="35" cy="44" rx="4" ry="4" fill="#CCFF00" fill-opacity=".5"/>
+          <ellipse cx="55" cy="44" rx="4" ry="4" fill="#CCFF00" fill-opacity=".5"/>
+          <path d="M37 55 Q45 60 53 55" stroke="#FF7A9A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- briefcase -->
+          <rect x="25" y="72" width="32" height="22" rx="4" fill="#CCFF00" fill-opacity=".3" stroke="#CCFF00" stroke-width="1"/>
+          <path d="M33 72 L33 68 Q33 65 37 65 L53 65 Q57 65 57 68 L57 72" stroke="#CCFF00" stroke-width="1.5" fill="none"/>
+          <!-- chart on briefcase -->
+          <polyline points="30,86 35,80 40,83 47,76 54,74" stroke="#CCFF00" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="work-header reveal" style="padding:0 7% 0;">
+    <div>
+      <div class="section-label">Selected Work</div>
+      <h2 class="section-title">The Reel.</h2>
+    </div>
+    <p class="work-note">Scripts, shoots, edits — in-house. In your language.</p>
+  </div>
+
+  <!-- SCROLL HINT -->
+  <div class="reel-hint reveal">
+    <span>drag to scroll</span>
+    <svg width="32" height="10" viewBox="0 0 32 10"><path d="M0 5 L28 5 M24 1 L28 5 L24 9" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <!-- HORIZONTAL SCROLL REEL -->
+  <div class="reel-track-outer">
+    <div class="reel-track" id="reelTrack">
+      <div class="reel-card" data-id="1HieTuT9ugpsp_apEQoOdprPNQW8Xkb6n">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1HieTuT9ugpsp_apEQoOdprPNQW8Xkb6n/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1_qLlzv5tFrepbagujSUqqfV5Xj5BaEdG">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1_qLlzv5tFrepbagujSUqqfV5Xj5BaEdG/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1pGwj5X64ylA4FFGJEkkmxmdq5oZVRP2T">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1pGwj5X64ylA4FFGJEkkmxmdq5oZVRP2T/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1pvNksEE1dvbeif7fZrEjpQhc9PXjri2r">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1pvNksEE1dvbeif7fZrEjpQhc9PXjri2r/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1scDAJYii8MgDb3QQj9KNju9q_tU2Vy8_">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1scDAJYii8MgDb3QQj9KNju9q_tU2Vy8_/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1hhT9n-4nO9LeRRX3qMugioRr-icdGvd4">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1hhT9n-4nO9LeRRX3qMugioRr-icdGvd4/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="16WJyZyHhLY5ZguQOQHl09AbAKaOPZKxu">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/16WJyZyHhLY5ZguQOQHl09AbAKaOPZKxu/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1gsa0hYIE3RtvT2yizWzcEjHRZTj-XKqQ">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1gsa0hYIE3RtvT2yizWzcEjHRZTj-XKqQ/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1y4VFEMwDnRFmy61efKDty88ANb8HPlYJ">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1y4VFEMwDnRFmy61efKDty88ANb8HPlYJ/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1RtDpuwZdxwdjs5yX5pHWVU9p5xckYtxc">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1RtDpuwZdxwdjs5yX5pHWVU9p5xckYtxc/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1YOFx7RDUmlplbGjq6btnLbMYNnZTZHJO">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1YOFx7RDUmlplbGjq6btnLbMYNnZTZHJO/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+      <div class="reel-card" data-id="1Ua2VHUeLElBMcfTrsC-jQIOjP0sXrbGU">
+        <div class="reel-frame"><iframe src="https://drive.google.com/file/d/1Ua2VHUeLElBMcfTrsC-jQIOjP0sXrbGU/preview" allowfullscreen allow="autoplay"></iframe></div>
+        <div class="reel-overlay"></div>
+        <div class="reel-play"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="5,2 16,9 5,16"/></svg></div>
+      </div>
+    </div>
+    <!-- fade edges -->
+    <div class="reel-fade-left"></div>
+    <div class="reel-fade-right"></div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="clients">
+  <div class="section-label reveal">Brands We've Moved</div>
+  <h2 class="section-title reveal">Our Clients.</h2>
+  <div class="clients-grid">
+    <div class="client-cell reveal"><div class="client-name">Eloelo</div><div class="client-sector">Social Entertainment</div></div>
+    <div class="client-cell reveal"><div class="client-name">Astrotalk</div><div class="client-sector">Astrology · Wellness</div></div>
+    <div class="client-cell reveal"><div class="client-name">Frnd</div><div class="client-sector">Social / Dating</div></div>
+    <div class="client-cell reveal"><div class="client-name">Perfora</div><div class="client-sector">Oral Care D2C</div></div>
+    <div class="client-cell reveal"><div class="client-name">Sanfe</div><div class="client-sector">Women's Health</div></div>
+    <div class="client-cell reveal"><div class="client-name">Crafto</div><div class="client-sector">Creative Tools</div></div>
+    <div class="client-cell reveal"><div class="client-name">Kutumb</div><div class="client-sector">Community App</div></div>
+    <div class="client-cell reveal"><div class="client-name">Gyan TV</div><div class="client-sector">Media · Broadcasting</div></div>
+    <div class="client-cell reveal"><div class="client-name">Dostt</div><div class="client-sector">Social / Friendship</div></div>
+    <div class="client-cell reveal"><div class="client-name">Astrolokal</div><div class="client-sector">Astrology · Local</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <canvas id="cta-canvas"></canvas>
+  <div class="cta-glow"></div>
+  <div class="cta-chars">
+    <!-- left squad character -->
+    <div class="cta-char-l">
+      <svg width="150" height="250" viewBox="0 0 150 250" fill="none" class="float-anim">
+        <ellipse cx="75" cy="200" rx="45" ry="40" fill="#F5E600" fill-opacity=".12"/>
+        <ellipse cx="75" cy="100" rx="38" ry="40" fill="#FFCBA4"/>
+        <!-- afro hair -->
+        <circle cx="75" cy="85" r="48" fill="#1A1A1A"/>
+        <circle cx="75" cy="105" r="32" fill="#FFCBA4"/>
+        <!-- stars in hair -->
+        <text x="58" y="68" font-size="10" fill="#F5E600" opacity=".7">★</text>
+        <text x="80" y="62" font-size="8" fill="#CCFF00" opacity=".7">✦</text>
+        <text x="94" y="72" font-size="9" fill="#F5E600" opacity=".7">◆</text>
+        <!-- eyes -->
+        <ellipse cx="63" cy="108" rx="8" ry="9" fill="white"/>
+        <ellipse cx="87" cy="108" rx="8" ry="9" fill="white"/>
+        <ellipse cx="63" cy="109" rx="5" ry="6" fill="#F5E600"/>
+        <ellipse cx="87" cy="109" rx="5" ry="6" fill="#CCFF00"/>
+        <circle cx="63" cy="108" r="2.5" fill="#000"/>
+        <circle cx="87" cy="108" r="2.5" fill="#000"/>
+        <circle cx="65" cy="106" r="1.5" fill="white"/>
+        <circle cx="89" cy="106" r="1.5" fill="white"/>
+        <ellipse cx="53" cy="118" rx="7" ry="4" fill="#F5E600" fill-opacity=".25"/>
+        <ellipse cx="97" cy="118" rx="7" ry="4" fill="#F5E600" fill-opacity=".25"/>
+        <path d="M66 124 Q75 130 84 124" stroke="#FF7A9A" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- body streetwear -->
+        <rect x="40" y="145" width="70" height="85" rx="12" fill="url(#sw1)"/>
+        <path d="M55 155 L75 220 L95 155" stroke="#CCFF00" stroke-width="2" stroke-opacity=".4"/>
+        <text x="62" y="190" font-size="14" font-weight="bold" fill="#CCFF00" font-family="Teko,sans-serif" opacity=".7">C</text>
+        <!-- arms -->
+        <path d="M40 155 Q18 175 20 205" stroke="#FFCBA4" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <path d="M110 155 Q132 175 130 205" stroke="#FFCBA4" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <defs>
+          <linearGradient id="sw1" x1="40" y1="145" x2="110" y2="230" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#F5E600"/>
+            <stop offset="100%" stop-color="#CCFF00"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <!-- right character: samurai/warrior anime -->
+    <div class="cta-char-r">
+      <svg width="150" height="250" viewBox="0 0 150 250" fill="none" class="float-anim2">
+        <!-- armor body -->
+        <path d="M30 160 Q25 190 32 240 L75 225 L118 240 Q125 190 120 160Z" fill="url(#arm1)"/>
+        <!-- chest armor plate -->
+        <path d="M40 165 L75 175 L110 165 L105 210 L75 215 L45 210Z" fill="#222222" stroke="#F5E600" stroke-width="1.5"/>
+        <!-- armor details -->
+        <path d="M55 175 L75 182 L95 175" stroke="#F5E600" stroke-width="1" stroke-opacity=".5"/>
+        <!-- neck -->
+        <rect x="64" y="148" width="22" height="18" rx="5" fill="#F5CBA7"/>
+        <!-- head -->
+        <ellipse cx="75" cy="118" rx="42" ry="44" fill="#F5CBA7"/>
+        <!-- samurai hair bun + headband -->
+        <path d="M33 100 Q36 62 75 58 Q114 62 117 100 Q100 74 75 70 Q50 74 33 100Z" fill="#1A1A1A"/>
+        <rect x="33" y="108" width="84" height="10" rx="5" fill="#F5E600" fill-opacity=".8"/>
+        <!-- hair bun -->
+        <circle cx="75" cy="62" r="12" fill="#1A1A1A"/>
+        <circle cx="75" cy="55" r="6" fill="#1A1A1A"/>
+        <!-- fierce eyes -->
+        <path d="M40 115 L60 110 L60 122 L40 122Z" fill="white"/>
+        <path d="M90 110 L110 115 L110 122 L90 122Z" fill="white"/>
+        <ellipse cx="52" cy="116" rx="5" ry="5" fill="#F5E600"/>
+        <ellipse cx="98" cy="116" rx="5" ry="5" fill="#F5E600"/>
+        <circle cx="52" cy="116" r="2.5" fill="#001"/>
+        <circle cx="98" cy="116" r="2.5" fill="#001"/>
+        <!-- determined brow -->
+        <path d="M38 108 L60 112" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/>
+        <path d="M112 108 L90 112" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/>
+        <!-- mouth set -->
+        <path d="M66 132 L84 132" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        <!-- katana/sword -->
+        <line x1="115" y1="250" x2="148" y2="80" stroke="#F5E600" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M142 78 L150 86 L148 80 L142 78Z" fill="#F5E600"/>
+        <rect x="110" y="200" width="12" height="6" rx="2" fill="#F5E600"/>
+        <!-- slash effect -->
+        <path d="M118 90 L148 75" stroke="#CCFF00" stroke-width="1.5" stroke-opacity=".6" stroke-dasharray="4 2"/>
+        <path d="M115 100 L145 82" stroke="#CCFF00" stroke-width="1" stroke-opacity=".4" stroke-dasharray="3 3"/>
+        <!-- arm holding sword -->
+        <path d="M110 165 Q125 195 120 225" stroke="#F5CBA7" stroke-width="13" stroke-linecap="round" fill="none"/>
+        <path d="M40 165 Q18 190 22 218" stroke="#F5CBA7" stroke-width="13" stroke-linecap="round" fill="none"/>
+        <defs>
+          <linearGradient id="arm1" x1="25" y1="160" x2="125" y2="240" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#F5E600"/>
+            <stop offset="100%" stop-color="#CCFF00"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+  <div class="cta-inner">
+    <div class="cta-top">
+      <div class="section-label reveal" style="justify-content:center;">Work With Us</div>
+      <h2 class="cta-title reveal">Ready to go<br><em>multilingual?</em></h2>
+      <p class="cta-sub reveal">Your audience speaks 10 languages.<br>Drop your details — we'll get back within 24 hours.</p>
+    </div>
+    <div class="cta-form-wrap reveal">
+      <div class="cta-form-inner">
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfOg_H5ffuHCG7s5eN0Jrvw_j1k9deo8UB2PQCacBLQ_iUmBA/viewform?embedded=true"
+          width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0"
+        >Loading…</iframe>
+      </div>
+      <div class="cta-form-alt">
+        <span>or reach us directly at</span>
+        <a href="mailto:hello@crifter.in" class="cta-email">hello@crifter.in</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">CRIFT<span>E</span>R</div>
+  <div class="f-tag">Content in Every Language. At Scale.</div>
+  <div class="f-copy">© 2025 Crifter Agency · Chennai</div>
+</footer>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">× Close</button>
+    <iframe id="modal-frame" class="modal-iframe" src="" allowfullscreen allow="autoplay"></iframe>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
+(function loop(){rx+=(cx-rx)*.18;ry+=(cy-ry)*.18;cursor.style.left=cx+'px';cursor.style.top=cy+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,[data-tilt],.video-card,.svc-card,.lang-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='16px';cursor.style.height='16px';ring.style.width='56px';ring.style.height='56px';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='8px';cursor.style.height='8px';ring.style.width='32px';ring.style.height='32px';});
+});
+
+// HERO THREE.JS
+(function(){
+  const c=document.getElementById('hero-canvas');
+  const r=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  r.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(70,1,.1,1000);
+  cam.position.z=30;
+  const N=3000,pos=new Float32Array(N*3);
+  for(let i=0;i<N*3;i++)pos[i]=(Math.random()-.5)*140;
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const pm=new THREE.PointsMaterial({size:.1,color:0xF5E600,transparent:true,opacity:.5});
+  const pts=new THREE.Points(pg,pm);scene.add(pts);
+  const ico=new THREE.Mesh(new THREE.IcosahedronGeometry(9,1),new THREE.MeshBasicMaterial({color:0xCCFF00,wireframe:true,transparent:true,opacity:.1}));scene.add(ico);
+  const t1=new THREE.Mesh(new THREE.TorusGeometry(14,.08,16,100),new THREE.MeshBasicMaterial({color:0xF5E600,transparent:true,opacity:.15}));scene.add(t1);
+  const t2=new THREE.Mesh(new THREE.TorusGeometry(7,.06,16,80),new THREE.MeshBasicMaterial({color:0xF5E600,transparent:true,opacity:.1}));t2.rotation.x=Math.PI/3;scene.add(t2);
+  const t3=new THREE.Mesh(new THREE.TorusGeometry(20,.04,8,60),new THREE.MeshBasicMaterial({color:0xCCFF00,transparent:true,opacity:.06}));t3.rotation.y=Math.PI/4;scene.add(t3);
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;});
+  function resize(){cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();r.setSize(innerWidth,innerHeight);}
+  window.addEventListener('resize',resize);resize();
+  (function tick(){requestAnimationFrame(tick);const t=Date.now()*.00025;pts.rotation.y=t*.08+mx*.25;pts.rotation.x=t*.04+my*.08;ico.rotation.y=t*.18;ico.rotation.x=t*.09;t1.rotation.y=t*.12+mx*.1;t1.rotation.x=.4+my*.08;t2.rotation.z=t*.2;t3.rotation.y=t*.05;t3.rotation.x=t*.03;r.render(scene,cam);})();
+})();
+
+// ABOUT THREE.JS
+(function(){
+  const c=document.getElementById('about-canvas');
+  const p=c.parentElement,sz=Math.min(p.offsetWidth,480);
+  c.width=sz;c.height=sz;
+  const r=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  r.setPixelRatio(Math.min(window.devicePixelRatio,2));r.setSize(sz,sz);
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(60,1,.1,100);cam.position.z=5;
+  const o1=new THREE.Mesh(new THREE.OctahedronGeometry(1.6),new THREE.MeshBasicMaterial({color:0xF5E600,wireframe:true,transparent:true,opacity:.35}));
+  const o2=new THREE.Mesh(new THREE.OctahedronGeometry(2.4),new THREE.MeshBasicMaterial({color:0xF5E600,wireframe:true,transparent:true,opacity:.12}));
+  const o3=new THREE.Mesh(new THREE.IcosahedronGeometry(1.1,0),new THREE.MeshBasicMaterial({color:0xCCFF00,wireframe:true,transparent:true,opacity:.25}));
+  const o4=new THREE.Mesh(new THREE.TorusGeometry(2,.04,8,40),new THREE.MeshBasicMaterial({color:0xCCFF00,transparent:true,opacity:.2}));
+  scene.add(o1,o2,o3,o4);
+  (function tick(){requestAnimationFrame(tick);const t=Date.now()*.001;o1.rotation.x=t*.4;o1.rotation.y=t*.25;o2.rotation.x=-t*.15;o2.rotation.y=t*.3;o3.rotation.y=t*.6;o3.rotation.z=t*.2;o4.rotation.z=t*.15;r.render(scene,cam);})();
+})();
+
+// CTA THREE.JS
+(function(){
+  const c=document.getElementById('cta-canvas');
+  const r=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  r.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(70,1,.1,1000);cam.position.z=20;
+  const N=1500,pos=new Float32Array(N*3);
+  for(let i=0;i<N*3;i++)pos[i]=(Math.random()-.5)*80;
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const p1=new THREE.Points(geo,new THREE.PointsMaterial({size:.09,color:0xF5E600,transparent:true,opacity:.3}));
+  const geo2=new THREE.BufferGeometry();const pos2=new Float32Array(N*3);for(let i=0;i<N*3;i++)pos2[i]=(Math.random()-.5)*80;
+  geo2.setAttribute('position',new THREE.BufferAttribute(pos2,3));
+  const p2=new THREE.Points(geo2,new THREE.PointsMaterial({size:.07,color:0xF5E600,transparent:true,opacity:.2}));
+  scene.add(p1,p2);
+  function resize(){const sec=document.getElementById('cta');const w=sec.offsetWidth,h=sec.offsetHeight;cam.aspect=w/h;cam.updateProjectionMatrix();r.setSize(w,h);}
+  window.addEventListener('resize',resize);resize();
+  (function tick(){requestAnimationFrame(tick);const t=Date.now()*.00006;p1.rotation.y=t;p2.rotation.y=-t*.7;p2.rotation.x=t*.3;r.render(scene,cam);})();
+})();
+
+// TILT
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+  card.addEventListener('mousemove',e=>{const rect=card.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width-.5;const y=(e.clientY-rect.top)/rect.height-.5;card.style.transform=`perspective(700px) rotateY(${x*14}deg) rotateX(${-y*14}deg) scale(1.03)`;card.style.transition='transform .05s';});
+  card.addEventListener('mouseleave',()=>{card.style.transform='';card.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';});
+});
+
+// DRAG SCROLL REEL
+(function(){
+  const track = document.getElementById('reelTrack');
+  if(!track) return;
+  let isDown=false, startX, scrollLeft;
+  track.addEventListener('mousedown', e=>{
+    isDown=true; track.classList.add('grabbing');
+    startX=e.pageX-track.offsetLeft; scrollLeft=track.scrollLeft;
+  });
+  track.addEventListener('mouseleave',()=>{isDown=false;track.classList.remove('grabbing');});
+  track.addEventListener('mouseup',()=>{isDown=false;track.classList.remove('grabbing');});
+  track.addEventListener('mousemove',e=>{
+    if(!isDown) return; e.preventDefault();
+    const x=e.pageX-track.offsetLeft;
+    track.scrollLeft=scrollLeft-(x-startX)*1.4;
+  });
+  // touch
+  let tStartX, tScrollLeft;
+  track.addEventListener('touchstart',e=>{tStartX=e.touches[0].pageX;tScrollLeft=track.scrollLeft;},{passive:true});
+  track.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].pageX-tStartX;
+    track.scrollLeft=tScrollLeft-dx;
+  },{passive:true});
+})();
+
+// VIDEO MODAL — works for reel cards
+document.querySelectorAll('.reel-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    document.getElementById('modal-frame').src=`https://drive.google.com/file/d/${card.dataset.id}/preview`;
+    document.getElementById('modal').classList.add('active');
+  });
+});
+document.getElementById('modal-close').addEventListener('click',closeModal);
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function closeModal(){document.getElementById('modal').classList.remove('active');document.getElementById('modal-frame').src='';}
+
+// REVEAL
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*60);obs.unobserve(e.target);}});},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// LANG BARS
+const bObs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in-view');bObs.unobserve(e.target);}});},{threshold:.3});
+document.querySelectorAll('.lang-card').forEach(el=>bObs.observe(el));
+
+// PILL CYCLE
+const pills=document.querySelectorAll('.lang-pill');let ai=0;
+setInterval(()=>{pills[ai].classList.remove('active');ai=(ai+1)%pills.length;pills[ai].classList.add('active');},1400);
+
+// NAV SCROLL
+window.addEventListener('scroll',()=>{document.getElementById('nav').style.padding=window.scrollY>60?'12px 48px':'18px 48px';});
+</script>
+</body>
+</html>
