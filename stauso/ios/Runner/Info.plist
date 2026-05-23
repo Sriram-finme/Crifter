@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Stauso needs photo access to save your quote cards</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Stauso needs permission to save images to your gallery</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Stauso needs camera access to take photos for your quote cards</string>
 </dict>
 </plist>
