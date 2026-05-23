@@ -77,4 +77,15 @@ class QuoteService {
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.id).toList());
   }
+
+  Future<List<Quote>> getQuotesByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    final docs = await Future.wait(
+      ids.map((id) => _db.collection('quotes').doc(id).get()),
+    );
+    return docs
+        .where((d) => d.exists && d.data() != null)
+        .map((d) => Quote.fromJson({...d.data()!, 'id': d.id}))
+        .toList();
+  }
 }

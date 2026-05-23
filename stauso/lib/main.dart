@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'constants/app_constants.dart';
 import 'router.dart';
 import 'services/firebase_service.dart';
@@ -15,16 +16,17 @@ void main() async {
   );
 }
 
-class StausoApp extends StatelessWidget {
+class StausoApp extends ConsumerWidget {
   const StausoApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      routerConfig: appRouter,
+      routerConfig: router,
     );
   }
 }
