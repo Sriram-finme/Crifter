@@ -70,10 +70,23 @@ class AuthService {
     await FirebaseService.auth.signOut();
   }
 
-  static User? getCurrentUser() => FirebaseService.auth.currentUser;
+  static User? getCurrentUser() {
+    if (!FirebaseService.isReady) return null;
+    try {
+      return FirebaseService.auth.currentUser;
+    } catch (_) {
+      return null;
+    }
+  }
 
-  static Stream<User?> authStateChanges() =>
-      FirebaseService.auth.authStateChanges();
+  static Stream<User?> authStateChanges() {
+    if (!FirebaseService.isReady) return Stream.value(null);
+    try {
+      return FirebaseService.auth.authStateChanges();
+    } catch (_) {
+      return Stream.value(null);
+    }
+  }
 
   // ── Internal ───────────────────────────────────────────────────────────────
 

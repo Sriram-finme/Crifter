@@ -107,7 +107,14 @@ final routerProvider = Provider<GoRouter>((ref) {
 // ─── Notifier that wakes the router when auth state changes ───────────────────
 
 class _RouterNotifier extends ChangeNotifier {
-  bool get isLoggedIn => FirebaseService.auth.currentUser != null;
+  bool get isLoggedIn {
+    if (!FirebaseService.isReady) return false;
+    try {
+      return FirebaseService.auth.currentUser != null;
+    } catch (_) {
+      return false;
+    }
+  }
 
   void refresh() => notifyListeners();
 }

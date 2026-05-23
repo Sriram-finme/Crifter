@@ -5,7 +5,12 @@ import '../models/user_profile.dart';
 import '../services/firebase_service.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return FirebaseService.auth.authStateChanges();
+  if (!FirebaseService.isReady) return Stream.value(null);
+  try {
+    return FirebaseService.auth.authStateChanges();
+  } catch (_) {
+    return Stream.value(null);
+  }
 });
 
 final userProfileProvider = FutureProvider<UserProfile?>((ref) async {
