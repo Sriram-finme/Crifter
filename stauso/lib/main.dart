@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'constants/app_constants.dart';
+import 'router.dart';
 import 'services/firebase_service.dart';
 import 'theme/app_theme.dart';
-import 'constants/app_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,15 +20,11 @@ class StausoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const Scaffold(
-        body: Center(
-          child: Text('Stauso'),
-        ),
-      ),
+      routerConfig: appRouter,
     );
   }
 }
