@@ -3,6 +3,9 @@
 *.log
 *.pyc
 *.swp
+
+# Firebase Functions
+functions/node_modules/
 .DS_Store
 .atom/
 .build/
