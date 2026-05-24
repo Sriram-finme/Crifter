@@ -127,9 +127,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       await SaverGallery.saveImage(
         bytes,
         quality: 100,
-        fileName: 'stauso_${DateTime.now().millisecondsSinceEpoch}.png',
+        name: 'stauso_${DateTime.now().millisecondsSinceEpoch}',
         androidRelativePath: 'Pictures/Stauso',
-        skipIfExists: false,
+        androidExistNotSave: false,
       );
       if (mounted) _showSnack('Saved to gallery!', isError: false);
     } catch (e) {
