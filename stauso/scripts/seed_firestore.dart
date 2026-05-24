@@ -76,14 +76,14 @@ Future<void> _write(
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
 final _categories = [
-  {'id': 'morning', 'name': 'Good Morning', 'slug': 'morning', 'iconUrl': '🌅', 'sortOrder': 1, 'isActive': true},
-  {'id': 'love', 'name': 'Love', 'slug': 'love', 'iconUrl': '❤️', 'sortOrder': 2, 'isActive': true},
-  {'id': 'motivation', 'name': 'Motivation', 'slug': 'motivation', 'iconUrl': '💪', 'sortOrder': 3, 'isActive': true},
-  {'id': 'friendship', 'name': 'Friendship', 'slug': 'friendship', 'iconUrl': '🤝', 'sortOrder': 4, 'isActive': true},
-  {'id': 'festivals', 'name': 'Festivals', 'slug': 'festivals', 'iconUrl': '🎉', 'sortOrder': 5, 'isActive': true},
-  {'id': 'shayari', 'name': 'Shayari', 'slug': 'shayari', 'iconUrl': '✍️', 'sortOrder': 6, 'isActive': true},
-  {'id': 'spiritual', 'name': 'Spiritual', 'slug': 'spiritual', 'iconUrl': '🙏', 'sortOrder': 7, 'isActive': true},
-  {'id': 'success', 'name': 'Success', 'slug': 'success', 'iconUrl': '🏆', 'sortOrder': 8, 'isActive': true},
+  {'id': 'morning', 'name': 'Good Morning', 'slug': 'morning', 'iconUrl': 'morning', 'sortOrder': 1, 'isActive': true},
+  {'id': 'love', 'name': 'Love', 'slug': 'love', 'iconUrl': 'love', 'sortOrder': 2, 'isActive': true},
+  {'id': 'motivation', 'name': 'Motivation', 'slug': 'motivation', 'iconUrl': 'motivation', 'sortOrder': 3, 'isActive': true},
+  {'id': 'friendship', 'name': 'Friendship', 'slug': 'friendship', 'iconUrl': 'friendship', 'sortOrder': 4, 'isActive': true},
+  {'id': 'festivals', 'name': 'Festivals', 'slug': 'festivals', 'iconUrl': 'festivals', 'sortOrder': 5, 'isActive': true},
+  {'id': 'shayari', 'name': 'Shayari', 'slug': 'shayari', 'iconUrl': 'shayari', 'sortOrder': 6, 'isActive': true},
+  {'id': 'spiritual', 'name': 'Spiritual', 'slug': 'spiritual', 'iconUrl': 'spiritual', 'sortOrder': 7, 'isActive': true},
+  {'id': 'success', 'name': 'Success', 'slug': 'success', 'iconUrl': 'success', 'sortOrder': 8, 'isActive': true},
 ];
 
 Map<String, dynamic> _quote(String text, String author, String categoryId) => {
