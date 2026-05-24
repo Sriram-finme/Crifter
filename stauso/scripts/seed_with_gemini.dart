@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 //
-// Generates quotes via Gemini API and seeds them to Firestore.
+// Generates multilingual quotes via Gemini and seeds them to Firestore.
 // Uses only dart:io and dart:convert — no extra packages.
 //
 // Usage: dart scripts/seed_with_gemini.dart
@@ -30,18 +30,19 @@ const _categories = [
 
 // ─── Gemini ───────────────────────────────────────────────────────────────────
 
-/// Calls Gemini to generate 20 quotes for [category].
-/// Returns a list of {text, author} maps.
 Future<List<Map<String, dynamic>>> _generateQuotes(
   HttpClient client,
   String category,
 ) async {
   final uri = Uri.parse('$_geminiEndpoint?key=$_geminiKey');
+
   final prompt =
-      "Generate 20 unique, beautiful, shareable quotes for the '$category' "
-      "category for an Indian social media app. Mix English and Hindi quotes. "
-      "Return ONLY a JSON array of objects with fields: text, author. "
-      "No markdown, no explanation.";
+      "Generate 20 beautiful, shareable social media quotes for the '$category' "
+      "category for an Indian app. Include: 8 in English, 6 in Hindi (Devanagari), "
+      "3 in Tamil (Tamil script), 3 in Telugu (Telugu script). "
+      "Return ONLY a valid JSON array with no markdown, each object having: "
+      "text (the quote), author (real or 'Unknown'), language (en/hi/ta/te). "
+      "No explanation, no backticks, just the JSON array.";
 
   final body = jsonEncode({
     'contents': [
@@ -57,7 +58,6 @@ Future<List<Map<String, dynamic>>> _generateQuotes(
     },
   });
 
-  // Retry up to 3 times on transient errors
   for (var attempt = 1; attempt <= 3; attempt++) {
     final req = await client.postUrl(uri);
     req.headers.set('Content-Type', 'application/json');
@@ -67,8 +67,8 @@ Future<List<Map<String, dynamic>>> _generateQuotes(
 
     if (res.statusCode != 200) {
       if (attempt < 3) {
-        print('  ⚠ Gemini returned ${res.statusCode}, retrying ($attempt/3)…');
-        sleep(const Duration(seconds: 3));
+        print('  ⚠ Gemini ${res.statusCode}, retrying ($attempt/3)…');
+        sleep(const Duration(seconds: 4));
         continue;
       }
       throw Exception('Gemini error ${res.statusCode}: $raw');
@@ -78,16 +78,15 @@ Future<List<Map<String, dynamic>>> _generateQuotes(
     final text = (decoded['candidates'] as List)[0]['content']['parts'][0]
         ['text'] as String;
 
-    return _parseQuoteArray(text);
+    return _parseArray(text);
   }
   throw Exception('Gemini failed after 3 attempts');
 }
 
-/// Strips optional markdown fences and parses the JSON array from Gemini output.
-List<Map<String, dynamic>> _parseQuoteArray(String raw) {
+List<Map<String, dynamic>> _parseArray(String raw) {
   var text = raw.trim();
 
-  // Strip ```json ... ``` or ``` ... ```
+  // Strip markdown fences if Gemini ignored the instruction
   if (text.startsWith('```')) {
     final firstNewline = text.indexOf('\n');
     final lastFence = text.lastIndexOf('```');
@@ -96,21 +95,20 @@ List<Map<String, dynamic>> _parseQuoteArray(String raw) {
     }
   }
 
-  // Find the JSON array bounds in case there's surrounding text
+  // Locate the JSON array bounds in case there is surrounding text
   final start = text.indexOf('[');
   final end = text.lastIndexOf(']');
   if (start == -1 || end == -1) {
-    throw FormatException('No JSON array found in Gemini response:\n$text');
+    throw FormatException('No JSON array in Gemini response:\n$text');
   }
-  text = text.substring(start, end + 1);
 
-  final list = jsonDecode(text) as List;
+  final list = jsonDecode(text.substring(start, end + 1)) as List;
   return list.cast<Map<String, dynamic>>();
 }
 
 // ─── Firestore REST helpers ───────────────────────────────────────────────────
 
-String _firestoreBase() =>
+String get _base =>
     'https://firestore.googleapis.com/v1/projects/$_firestoreProject/databases/(default)/documents';
 
 Map<String, dynamic> _val(dynamic v) {
@@ -135,14 +133,14 @@ Map<String, dynamic> _val(dynamic v) {
   return {'stringValue': v.toString()};
 }
 
-Future<void> _writeDoc(
+Future<void> _write(
   HttpClient client,
   String collection,
   String docId,
   Map<String, dynamic> data,
 ) async {
-  final uri = Uri.parse(
-      '${_firestoreBase()}/$collection/$docId?key=$_firestoreKey');
+  final uri =
+      Uri.parse('$_base/$collection/$docId?key=$_firestoreKey');
   final req = await client.patchUrl(uri);
   req.headers.set('Content-Type', 'application/json');
   req.write(jsonEncode({
@@ -163,7 +161,7 @@ void main() async {
 
   try {
     for (final category in _categories) {
-      print('\n🤖 Generating quotes for "$category"…');
+      print('\n🤖 [$category] Calling Gemini…');
 
       List<Map<String, dynamic>> quotes;
       try {
@@ -173,37 +171,39 @@ void main() async {
         continue;
       }
 
-      print('  📝 Received ${quotes.length} quotes — writing to Firestore…');
+      print('  📝 ${quotes.length} quotes received — writing to Firestore…');
 
       for (var i = 0; i < quotes.length; i++) {
         final q = quotes[i];
         final text = (q['text'] ?? '').toString().trim();
         final author = (q['author'] ?? 'Unknown').toString().trim();
+        final language = (q['language'] ?? 'en').toString().trim();
         if (text.isEmpty) continue;
 
         final docId = '${category}_${(i + 1).toString().padLeft(2, '0')}';
-        await _writeDoc(client, 'quotes', docId, {
+        await _write(client, 'quotes', docId, {
           'text': text,
           'author': author.isEmpty ? 'Unknown' : author,
           'categoryId': category,
-          'language': 'en',
+          'language': language,
           'tags': <String>[],
           'isPremium': false,
           'createdAt': DateTime.now(),
         });
-        print('  ✓ quotes/$docId');
+        print('  ✓ quotes/$docId [$language]');
         totalWritten++;
       }
 
-      // Brief pause between categories to stay within Gemini rate limits
+      // Pause between categories to stay within Gemini rate limits
       if (category != _categories.last) {
         sleep(const Duration(seconds: 2));
       }
     }
 
-    print('\n✅ Done! $totalWritten quotes seeded across ${_categories.length} categories.');
+    print(
+        '\n✅ Done! $totalWritten quotes seeded across ${_categories.length} categories.');
   } catch (e) {
-    stderr.writeln('\n❌ Fatal error: $e');
+    stderr.writeln('\n❌ Fatal: $e');
     exit(1);
   } finally {
     client.close();
