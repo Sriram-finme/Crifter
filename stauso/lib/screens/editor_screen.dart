@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -124,10 +124,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     try {
       final bytes = await _captureCard(quote);
       if (bytes == null) return;
-      await ImageGallerySaver.saveImage(
+      await SaverGallery.saveImage(
         bytes,
         quality: 100,
-        name: 'stauso_${DateTime.now().millisecondsSinceEpoch}',
+        fileName: 'stauso_${DateTime.now().millisecondsSinceEpoch}.png',
+        androidRelativePath: 'Pictures/Stauso',
+        skipIfExists: false,
       );
       if (mounted) _showSnack('Saved to gallery!', isError: false);
     } catch (e) {
