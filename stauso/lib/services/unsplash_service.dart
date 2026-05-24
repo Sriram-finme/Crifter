@@ -40,13 +40,22 @@ class UnsplashService {
       '&client_id=$_accessKey',
     );
 
-    final client = HttpClient();
+    // ignore: avoid_print
+    print('[Unsplash] Fetching image for "$category": $uri');
+
+    final client = HttpClient()..autoUncompress = true;
     try {
       final request = await client.getUrl(uri);
+      request.followRedirects = true;
       final response = await request.close();
 
+      // ignore: avoid_print
+      print('[Unsplash] Response status: ${response.statusCode} for "$category"');
+
       if (response.statusCode != 200) {
-        return cachedUrl; // serve stale cache on non-200
+        // ignore: avoid_print
+        print('[Unsplash] Non-200; serving stale cache for "$category"');
+        return cachedUrl;
       }
 
       final body = await response.transform(utf8.decoder).join();
@@ -54,13 +63,18 @@ class UnsplashService {
       final urls = data['urls'] as Map<String, dynamic>?;
       final imageUrl = urls?['regular'] as String?;
 
+      // ignore: avoid_print
+      print('[Unsplash] Image URL for "$category": $imageUrl');
+
       if (imageUrl != null) {
         await prefs.setString(urlKey, imageUrl);
         await prefs.setInt(tsKey, DateTime.now().millisecondsSinceEpoch);
       }
       return imageUrl;
-    } catch (_) {
-      return cachedUrl; // return stale on network error
+    } catch (e) {
+      // ignore: avoid_print
+      print('[Unsplash] Error for "$category": $e');
+      return cachedUrl;
     } finally {
       client.close();
     }

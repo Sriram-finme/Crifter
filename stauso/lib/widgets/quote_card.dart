@@ -169,25 +169,27 @@ class QuoteCardView extends StatelessWidget {
           ),
           // Quote text + author
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 40, 20, 44),
+            padding: const EdgeInsets.fromLTRB(20, 36, 20, 40),
             child: Column(
               mainAxisAlignment: _columnAlignment,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  quote.text,
-                  style: buildQuoteTextStyle(
-                    fontFamily,
-                    fontSize: fontSize,
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                    height: 1.6,
+                Flexible(
+                  child: Text(
+                    quote.text,
+                    style: buildQuoteTextStyle(
+                      fontFamily,
+                      fontSize: fontSize,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 8,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 9,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   '— ${quote.author}',
                   style: GoogleFonts.poppins(
@@ -196,6 +198,8 @@ class QuoteCardView extends StatelessWidget {
                     color: textColor.withValues(alpha: 0.75),
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
