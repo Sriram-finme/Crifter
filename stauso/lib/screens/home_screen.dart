@@ -240,8 +240,10 @@ class _QuoteListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageUrl =
-        ref.watch(unsplashImageProvider(quote.categoryId)).valueOrNull;
+    final asyncImage = ref.watch(unsplashImageProvider(quote.categoryId));
+    final imageUrl = asyncImage.valueOrNull;
+    // ignore: avoid_print
+    print('[QuoteListItem] category=${quote.categoryId} asyncState=${asyncImage.runtimeType} imageUrl=$imageUrl');
     return QuoteCard(
       quote: quote,
       imageUrl: imageUrl,

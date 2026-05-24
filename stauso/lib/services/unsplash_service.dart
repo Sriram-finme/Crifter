@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UnsplashService {
@@ -28,55 +29,46 @@ class UnsplashService {
     final cachedTs = prefs.getInt(tsKey);
     if (cachedUrl != null && cachedTs != null) {
       final age = DateTime.now().millisecondsSinceEpoch - cachedTs;
-      if (age < _cacheTtl.inMilliseconds) return cachedUrl;
+      if (age < _cacheTtl.inMilliseconds) {
+        print('[Unsplash] Returning cached URL for "$category": $cachedUrl');
+        return cachedUrl;
+      }
     }
 
-    // Fetch a fresh random image from Unsplash
-    final query = _queries[category] ?? category;
-    final uri = Uri.parse(
-      'https://api.unsplash.com/photos/random'
-      '?query=${Uri.encodeComponent(query)}'
-      '&orientation=squarish'
-      '&client_id=$_accessKey',
-    );
+    final uri = Uri.https('api.unsplash.com', '/photos/random', {
+      'query': _queries[category] ?? category,
+      'orientation': 'squarish',
+      'client_id': _accessKey,
+    });
 
-    // ignore: avoid_print
-    print('[Unsplash] Fetching image for "$category": $uri');
+    print('[Unsplash] Fetching "$category" → $uri');
 
-    final client = HttpClient()..autoUncompress = true;
     try {
-      final request = await client.getUrl(uri);
-      request.followRedirects = true;
-      final response = await request.close();
+      final response = await http.get(uri);
 
-      // ignore: avoid_print
-      print('[Unsplash] Response status: ${response.statusCode} for "$category"');
+      print('[Unsplash] Status ${response.statusCode} for "$category"');
 
       if (response.statusCode != 200) {
-        // ignore: avoid_print
-        print('[Unsplash] Non-200; serving stale cache for "$category"');
+        print('[Unsplash] Body: ${response.body.substring(0, response.body.length.clamp(0, 300))}');
         return cachedUrl;
       }
 
-      final body = await response.transform(utf8.decoder).join();
-      final data = jsonDecode(body) as Map<String, dynamic>;
+      print('[Unsplash] Body (first 300): ${response.body.substring(0, response.body.length.clamp(0, 300))}');
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
       final urls = data['urls'] as Map<String, dynamic>?;
       final imageUrl = urls?['regular'] as String?;
 
-      // ignore: avoid_print
-      print('[Unsplash] Image URL for "$category": $imageUrl');
+      print('[Unsplash] Extracted URL for "$category": $imageUrl');
 
       if (imageUrl != null) {
         await prefs.setString(urlKey, imageUrl);
         await prefs.setInt(tsKey, DateTime.now().millisecondsSinceEpoch);
       }
       return imageUrl;
-    } catch (e) {
-      // ignore: avoid_print
-      print('[Unsplash] Error for "$category": $e');
+    } catch (e, st) {
+      print('[Unsplash] Error for "$category": $e\n$st');
       return cachedUrl;
-    } finally {
-      client.close();
     }
   }
 }
