@@ -3,6 +3,7 @@ import '../models/category.dart';
 import '../models/quote.dart';
 import '../services/firebase_service.dart';
 import '../services/quote_service.dart';
+import '../services/unsplash_service.dart';
 
 final quoteServiceProvider = Provider<QuoteService>((ref) => QuoteService());
 
@@ -21,6 +22,12 @@ final quotesProvider = StreamProvider<List<Quote>>((ref) {
     return service.getFeaturedQuotes();
   }
   return service.getQuotesByCategory(category);
+});
+
+final unsplashServiceProvider = Provider<UnsplashService>((ref) => UnsplashService());
+
+final unsplashImageProvider = FutureProvider.family<String?, String>((ref, category) {
+  return ref.read(unsplashServiceProvider).getImageForCategory(category);
 });
 
 final favoritesProvider = StreamProvider<List<String>>((ref) {

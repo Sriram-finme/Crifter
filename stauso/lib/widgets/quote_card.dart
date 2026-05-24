@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
@@ -56,6 +57,7 @@ class QuoteCardView extends StatelessWidget {
   final Quote quote;
   final int? gradientIndex;
   final Uint8List? backgroundImage;
+  final String? imageUrl;
   final String fontFamily;
   final double fontSize;
   final Color textColor;
@@ -67,6 +69,7 @@ class QuoteCardView extends StatelessWidget {
     required this.quote,
     this.gradientIndex,
     this.backgroundImage,
+    this.imageUrl,
     this.fontFamily = 'Playfair Display',
     this.fontSize = 22,
     this.textColor = Colors.white,
@@ -83,106 +86,135 @@ class QuoteCardView extends StatelessWidget {
         QuoteTextPosition.center => MainAxisAlignment.center,
       };
 
+  bool get _hasPhoto => backgroundImage != null || imageUrl != null;
+
   @override
   Widget build(BuildContext context) {
     final gradient = kGradientPresets[_gradientIdx];
+    final useNetworkImage = backgroundImage == null && imageUrl != null;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: backgroundImage == null
-              ? LinearGradient(
-                  colors: gradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          image: backgroundImage != null
-              ? DecorationImage(
-                  image: MemoryImage(backgroundImage!),
-                  fit: BoxFit.cover,
-                )
-              : null,
-        ),
-        child: Stack(
-          children: [
-            // Dark overlay for photos
-            if (backgroundImage != null)
-              Container(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background layer
+          if (useNetworkImage)
+            CachedNetworkImage(
+              imageUrl: imageUrl!,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withValues(alpha: 0.55),
-                      Colors.black.withValues(alpha: 0.35),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    colors: gradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
               ),
-            // Decorative opening quote mark
-            Positioned(
-              top: 8,
-              left: 14,
-              child: Text(
-                '“',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 96,
-                  color: Colors.white.withValues(alpha: 0.12),
-                  height: 1,
+              errorWidget: (_, __, ___) => Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: gradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                gradient: backgroundImage == null
+                    ? LinearGradient(
+                        colors: gradient,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                image: backgroundImage != null
+                    ? DecorationImage(
+                        image: MemoryImage(backgroundImage!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+            ),
+          // Dark overlay for photos
+          if (_hasPhoto)
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.55),
+                    Colors.black.withValues(alpha: 0.35),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
             ),
-            // Quote text + author
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 40, 20, 44),
-              child: Column(
-                mainAxisAlignment: _columnAlignment,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    quote.text,
-                    style: buildQuoteTextStyle(
-                      fontFamily,
-                      fontSize: fontSize,
-                      color: textColor,
-                      fontWeight: FontWeight.w600,
-                      height: 1.6,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 9,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '— ${quote.author}',
-                    style: GoogleFonts.poppins(
-                      fontSize: (fontSize * 0.58).clamp(11, 16),
-                      fontWeight: FontWeight.w500,
-                      color: textColor.withValues(alpha: 0.75),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+          // Decorative opening quote mark
+          Positioned(
+            top: 8,
+            left: 14,
+            child: Text(
+              '”',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 96,
+                color: Colors.white.withValues(alpha: 0.12),
+                height: 1,
               ),
             ),
-            // Watermark
-            Positioned(
-              bottom: 12,
-              right: 16,
-              child: Text(
-                watermarkName,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: 0.55),
-                  letterSpacing: 1.4,
+          ),
+          // Quote text + author
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 40, 20, 44),
+            child: Column(
+              mainAxisAlignment: _columnAlignment,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  quote.text,
+                  style: buildQuoteTextStyle(
+                    fontFamily,
+                    fontSize: fontSize,
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 9,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  '— ${quote.author}',
+                  style: GoogleFonts.poppins(
+                    fontSize: (fontSize * 0.58).clamp(11, 16),
+                    fontWeight: FontWeight.w500,
+                    color: textColor.withValues(alpha: 0.75),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          // Watermark
+          Positioned(
+            bottom: 12,
+            right: 16,
+            child: Text(
+              watermarkName,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.55),
+                letterSpacing: 1.4,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -195,6 +227,7 @@ class QuoteCard extends StatelessWidget {
   final bool isFavorited;
   final VoidCallback onFavoriteToggle;
   final VoidCallback onDownload;
+  final String? imageUrl;
 
   const QuoteCard({
     super.key,
@@ -202,6 +235,7 @@ class QuoteCard extends StatelessWidget {
     required this.isFavorited,
     required this.onFavoriteToggle,
     required this.onDownload,
+    this.imageUrl,
   });
 
   void _share() {
@@ -231,6 +265,7 @@ class QuoteCard extends StatelessWidget {
             child: QuoteCardView(
               quote: quote,
               gradientIndex: gradientIdx,
+              imageUrl: imageUrl,
             ),
           ),
           Positioned(

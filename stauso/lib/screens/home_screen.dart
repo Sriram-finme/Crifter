@@ -215,15 +215,39 @@ class _QuoteList extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       itemCount: quotes.length,
       separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (context, i) {
-        final quote = quotes[i];
-        return QuoteCard(
-          quote: quote,
-          isFavorited: favorites.contains(quote.id),
-          onFavoriteToggle: () => onFavoriteToggle(quote.id),
-          onDownload: () => onDownload(quote),
-        );
-      },
+      itemBuilder: (context, i) => _QuoteListItem(
+        quote: quotes[i],
+        favorites: favorites,
+        onFavoriteToggle: onFavoriteToggle,
+        onDownload: onDownload,
+      ),
+    );
+  }
+}
+
+class _QuoteListItem extends ConsumerWidget {
+  final Quote quote;
+  final List<String> favorites;
+  final void Function(String quoteId) onFavoriteToggle;
+  final void Function(Quote quote) onDownload;
+
+  const _QuoteListItem({
+    required this.quote,
+    required this.favorites,
+    required this.onFavoriteToggle,
+    required this.onDownload,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final imageUrl =
+        ref.watch(unsplashImageProvider(quote.categoryId)).valueOrNull;
+    return QuoteCard(
+      quote: quote,
+      imageUrl: imageUrl,
+      isFavorited: favorites.contains(quote.id),
+      onFavoriteToggle: () => onFavoriteToggle(quote.id),
+      onDownload: () => onDownload(quote),
     );
   }
 }
