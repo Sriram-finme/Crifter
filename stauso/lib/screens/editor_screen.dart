@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:saver_gallery/saver_gallery.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -124,14 +123,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     try {
       final bytes = await _captureCard(quote);
       if (bytes == null) return;
-      await SaverGallery.saveImage(
-        bytes,
-        quality: 100,
-        name: 'stauso_${DateTime.now().millisecondsSinceEpoch}',
-        androidRelativePath: 'Pictures/Stauso',
-        androidExistNotSave: false,
-      );
-      if (mounted) _showSnack('Saved to gallery!', isError: false);
+      final directory = Directory('/storage/emulated/0/Download/Stauso');
+      await directory.create(recursive: true);
+      final file = File(
+          '${directory.path}/stauso_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(bytes);
+      if (mounted) _showSnack('Saved to Downloads/Stauso/', isError: false);
     } catch (e) {
       if (mounted) _showSnack('Could not save: $e');
     }
